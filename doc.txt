@@ -1,0 +1,1111 @@
+Technical Specification 
+
+Stress Testing Services for SATREPS systems 
+
+ 
+
+Purpose 
+
+The project requires an independent performance and stress testing exercise to validate the capacity, stability, and scalability of its application infrastructure under high concurrent demand. 
+
+The objective is to determine the operational limits of the platform, identify performance bottlenecks, and provide recommendations for infrastructure optimization before production deployment. 
+
+ 
+
+2. Scope 
+
+The stress test shall cover the following applications, which are expected to run on the same production infrastructure: 
+
+Manual Traceability 
+
+Grass-fed Certification Platform 
+
+Animal growth analysis (output 2) 
+
+Geospatial biomass monitoring (output 3)  
+
+ 
+
+The provider shall evaluate both: 
+
+Individual application performance. 
+
+Overall infrastructure performance under simultaneous execution. 
+
+ 
+
+3. Test Objective 
+
+The primary objectives are to: 
+
+Validate that the infrastructure can sustain high concurrent demand. 
+
+Measure response times under increasing load. 
+
+Identify bottlenecks across the application stack. 
+
+Detect failures related to CPU, memory, database, storage, or networking. 
+
+Evaluate system behaviour during peak traffic. 
+
+Assess recovery once load returns to normal levels. 
+
+Produce recommendations for performance improvements. 
+
+ 
+
+4. Target Load 
+
+The objective of the stress test is to validate the shared infrastructure supporting the FEDEGAN technology ecosystem under an aggregate peak workload equivalent to 45,000 concurrent requests across the applications covered by this specification. 
+
+ 
+
+For the purposes of the quotation and test design, the provider shall clearly define how this target will be represented in terms of: 
+
+Concurrent virtual users 
+
+Active or in-flight requests 
+
+Requests per second 
+
+Transaction throughput 
+
+Users think time 
+
+Session duration 
+
+Ramp-up and ramp-down periods 
+
+ 
+
+The workload shall represent realistic production behaviour and shall not assume an equal distribution across the applications. 
+
+ 
+
+The provider is expected to simulate concurrent traffic across the following systems: 
+
+ 
+
+Manual Traceability 
+
+Grass-fed Certification Platform https://grassfed.fedegan.org.co/  
+
+Animal growth analysis (output 2) https://grassfed.fedegan.org.co/output-2/  
+
+Geoespatial biomass monitoring (output 3)  
+
+https://grassfed.fedegan.org.co/output-3/  
+
+ 
+
+These applications are expected to operate on shared infrastructure. The test shall therefore evaluate: 
+
+The performance of each application independently. 
+
+The performance of the shared infrastructure when all applications operate simultaneously. 
+
+The effect of one application’s workload on the availability and response times of the other applications. 
+
+Competition for shared resources, including CPU, memory, network capacity, database connections, storage, and processing services. 
+
+ 
+
+The final workload allocation shall reflect expected production usage and the technical characteristics of each application. The provider may propose a workload distribution based on the information contained in this specification, subject to FEDEGAN’s approval before execution. 
+
+ 
+
+The combined test scenario shall reach the agreed peak workload equivalent to 45,000 concurrent requests, based on the workload model defined and approved before execution, without artificially increasing the use of restricted or specialized functions beyond realistic production conditions. 
+
+ 
+
+5. User and Transaction Workload Model 
+
+ 
+
+The applications included in the test have different usage patterns and technical characteristics. The workload model shall therefore distinguish between: 
+
+Database-intensive internal operations. 
+
+Transactional application workflows. 
+
+Public web traffic. 
+
+Static content retrieval. 
+
+External API calls. 
+
+Computationally intensive analytical processing. 
+
+ 
+
+The provider shall create separate scripts and transaction groups for each application and user profile. 
+
+ 
+
+5.1 Manual Traceability 
+
+Although this application is expected to have a relatively small number of concurrent users (typically fewer than 100 simultaneous users), it performs a high volume of SQL database operations. 
+
+ 
+
+The stress test should therefore focus on database-intensive transactions rather than large user concurrency. 
+
+ 
+
+Typical operations include: 
+
+User authentication  
+
+Animal searches  
+
+Traceability searches  
+
+Record creation and updates  
+
+Historical data retrieval  
+
+Report generation  
+
+ 
+
+The objective is to validate: 
+
+Database throughput  
+
+Query latency  
+
+Connection pool utilization  
+
+Lock contention  
+
+Database resource consumption  
+
+This application should be modeled as a high database workload with low user concurrency. 
+
+ 
+
+5.2 Grass-fed Certification Platform 
+
+This application represents the primary transactional workload and is expected to generate the highest volume of concurrent activity. 
+
+ 
+
+The provider should model realistic usage for each user profile. 
+
+ 
+
+Profile: Inspector 
+
+Primary activities: 
+
+Login  
+
+Search farms  
+
+Search animals  
+
+Review animal history  
+
+Perform inspections  
+
+Validate certification requirements  
+
+Submit inspection results  
+
+Expected usage: High 
+
+ 
+
+Profile: Slaughterhouse 
+
+Primary activities: 
+
+Login  
+
+Search animals  
+
+Register processing events  
+
+Validate animal information  
+
+Complete certification workflow  
+
+Invoke the external information service when required  
+
+Expected usage: High 
+
+ 
+
+External API Integration 
+
+The external API is only required during specific slaughterhouse operations. 
+
+Based on expected production behaviour, no more than 20 concurrent users are expected to invoke this service simultaneously. 
+
+ 
+
+The provider shall therefore limit concurrent requests to the external API while continuing to exercise the remainder of the application under full load. 
+
+The external API should be monitored independently to measure: 
+
+Response time  
+
+Timeout rate  
+
+Failure rate  
+
+Impact on the application  
+
+ 
+
+Profile: Visitor 
+
+Primary activities: 
+
+Login  
+
+View inspection information  
+
+Review farm information  
+
+Submit observations  
+
+Expected usage: Medium 
+
+ 
+
+Profile: Rancher 
+
+Primary activities: 
+
+Login  
+
+Manage farms  
+
+Manage animals  
+
+Review certification status  
+
+Update farm information  
+
+Expected usage: Medium 
+
+ 
+
+Profile: FEDEGAN Administrator 
+
+Primary activities: 
+
+User administration  
+
+Platform administration  
+
+Reporting  
+
+Configuration management  
+
+Expected usage: Low 
+
+Administrative users represent a very small percentage of overall production activity and may be evaluated through an independent test scenario rather than the primary stress workload. 
+
+ 
+
+Recommended User Distribution 
+
+For the primary stress scenario, the following workload distribution is recommended: 
+
+User Profile 
+
+Distribution 
+
+Inspector/Visitor 
+
+40% 
+
+Slaughterhouse 
+
+30% 
+
+Rancher 
+
+30% 
+
+FEDEGAN Administrator 
+
+Separate Scenario 
+
+The provider may adjust this distribution if supported by performance engineering best practices. 
+
+ 
+
+5.3 Output 2 – Animal Growth Analysis 
+
+Output 2 is publicly accessible and is expected to receive anonymous traffic without the concurrency restrictions associated with internal FEDEGAN applications. 
+
+Typical activities include: 
+
+Loading the application. 
+
+Retrieving static assets. 
+
+Loading available reference data. 
+
+Entering analysis parameters. 
+
+Executing animal-growth calculations. 
+
+Viewing charts and results. 
+
+Navigating regional agroecological information. 
+
+ 
+
+The provider shall determine which operations are performed entirely in the browser and which operations require server-side processing. 
+
+ 
+
+The primary areas to evaluate include: 
+
+HTTP throughput. 
+
+Network availability. 
+
+Static asset delivery. 
+
+Cache behavior. 
+
+Web server scalability. 
+
+Response times for data requests. 
+
+Availability during peak public traffic. 
+
+Impact on other applications hosted on the shared infrastructure. 
+
+ 
+
+Where calculations are executed entirely on the client side, the test shall distinguish browser-side processing from server-side infrastructure performance. 
+
+ 
+
+5.4 Output 3 – Geospatial Biomass Monitoring 
+
+Output 3 is publicly accessible and is expected to receive a high volume of anonymous web traffic. 
+
+Standard user activities include: 
+
+Loading the application. 
+
+Loading maps and geospatial components. 
+
+Retrieving static and reference datasets. 
+
+Managing or submitting pasture-area information. 
+
+Configuring analysis parameters. 
+
+Reviewing analysis results. 
+
+Downloading generated information or reports. 
+
+ 
+
+For standard web traffic, the primary performance concerns include: 
+
+Network availability. 
+
+HTTP throughput. 
+
+Static asset delivery. 
+
+Map and geospatial data loading. 
+
+Cache performance. 
+
+Web server scalability. 
+
+Availability under peak public demand. 
+
+ 
+
+Python-Based Analytical Model 
+
+Output 3 includes a specialized feature that executes a Python-based model to estimate dry biomass using satellite imagery. 
+
+This operation is computationally intensive and has a different resource profile from standard browsing traffic. It shall therefore be tested as a separate transaction group and reported independently. 
+
+ 
+
+The provider shall evaluate: 
+
+Maximum sustainable concurrent model executions. 
+
+Request acceptance and rejection behavior. 
+
+Queue behavior, where applicable. 
+
+Queue waiting time. 
+
+Model execution time. 
+
+End-to-end response time. 
+
+CPU utilization. 
+
+Memory utilization. 
+
+Temporary storage utilization. 
+
+Process and worker availability. 
+
+Timeout behavior. 
+
+Failed or incomplete model executions. 
+
+Recovery after processing peaks. 
+
+Impact on standard Output 3 traffic. 
+
+Impact on the other FEDEGAN applications. 
+
+ 
+
+The number of concurrent model executions shall be based on a realistic operational scenario and shall not be assumed to equal the total number of concurrent Output 3 visitors. 
+
+ 
+
+The provider shall identify whether the model currently supports: 
+
+Synchronous processing. 
+
+Asynchronous processing. 
+
+Job queues. 
+
+Concurrent workers. 
+
+Request throttling. 
+
+Result caching. 
+
+Previously generated result reuse. 
+
+ 
+
+If these mechanisms are not available, the provider shall identify the maximum safe concurrency and recommend appropriate controls. 
+
+ 
+
+5.5 Overall workload 
+
+The stress test shall not treat all requests as homogeneous. Each application exercises different infrastructure components and presents different performance risks. 
+
+Application 
+
+Expected Usage Pattern 
+
+Primary Performance Risk 
+
+Manual Traceability 
+
+Low concurrency and database-intensive internal transactions 
+
+SQL database throughput, query latency, locks, and connection limits 
+
+Grass-fed Certification Platform 
+
+High transactional concurrency with multiple authenticated profiles 
+
+Business transaction processing, database activity, and external API dependency 
+
+Output 2 
+
+High-volume public access with primarily data retrieval and browser-based interaction 
+
+HTTP throughput, static content delivery, caching, and network availability 
+
+Output 3 
+
+High-volume public traffic combined with specialized analytical requests 
+
+HTTP throughput, geospatial data delivery, and Python model processing 
+
+ 
+
+The combined test scenario shall run representative workloads from all four applications simultaneously to determine whether resource consumption in one application causes unacceptable degradation in another. 
+
+ 
+
+5.6 Technical Documentation and Test-Script Definition 
+
+FEDEGAN will provide the available technical and functional documentation for Manual Traceability, the Grass-fed Certification Platform, Output 2 – Animal Growth Analysis, and Output 3 – Geospatial Biomass Monitoring. 
+
+ 
+
+This documentation may include, where available: 
+
+Application architecture and component descriptions. 
+
+Functional workflows and user roles. 
+
+API definitions and integration points. 
+
+Database and infrastructure information. 
+
+Authentication requirements. 
+
+Representative transactions and business processes. 
+
+Technical constraints and external dependencies. 
+
+ 
+
+The provider shall review this documentation during the test-preparation phase and use it to define the final user journeys, transaction groups, test scripts, required test data, and monitoring approach. 
+
+ 
+
+The provider shall identify any additional information required to complete the workload model. The final test scripts and workload assumptions shall be submitted to FEDEGAN for review and approval before test execution. 
+
+ 
+
+6. Test Scenarios 
+
+The provider shall execute a series of performance tests designed to evaluate the behaviour of the FEDEGAN ecosystem under different operating conditions. Each scenario shall include the corresponding workload model, execution duration, monitored metrics, observed limitations, and technical findings. 
+
+ 
+
+6.1 Baseline Performance Test 
+
+The objective of this scenario is to establish the expected performance of the FEDEGAN ecosystem under normal day-to-day production conditions.  
+
+The provider shall execute representative transactions across all applications using the expected production workload summarized below: 
+
+Application 
+
+Representative Baseline Workload 
+
+Manual Traceability 
+
+Up to 100 concurrent FEDEGAN users executing database-intensive transactions. 
+
+Grass-fed Certification Platform 
+
+Up to 700 concurrent authenticated users distributed across the principal operational profiles. 
+
+Output 2 – Animal Growth Analysis 
+
+Public access based on an expected volume of approximately 1,000 unique users per day, including standard navigation, data retrieval, and animal-growth analysis activities. 
+
+Output 3 – Geospatial Biomass Monitoring 
+
+Public access based on an expected volume of approximately 1,000 unique users per day, including map interaction, data retrieval, analysis configuration, and representative executions of the Python-based biomass model. 
+
+ 
+
+For the Grass-fed Certification Platform, the baseline workload shall include the following representative concurrent users: 
+
+User Profile 
+
+Representative Concurrent Users 
+
+Inspector 
+
+100 
+
+Slaughterhouse 
+
+50 
+
+Rancher 
+
+500 
+
+FEDEGAN Administrator 
+
+50 
+
+Total 
+
+700 
+
+ 
+
+The Slaughterhouse workload shall include representative use of the external information service. However, concurrent calls to the external API shall be limited to a maximum of approximately 20 users, in accordance with expected production behaviour. 
+
+ 
+
+For Manual Traceability, the provider shall reproduce realistic user journeys that generate sustained SQL database activity. The number of concurrent users shall not be artificially increased beyond the expected operational limit solely to generate additional load. 
+
+ 
+
+For Outputs 2 and 3, the provider shall convert the expected daily usage into a justified concurrent workload based on assumptions such as: 
+
+Peak-hour traffic concentration. 
+
+Average session duration. 
+
+Number of requests generated per session. 
+
+Users think time. 
+
+Repeated or returning sessions. 
+
+Simultaneous public access across both applications. 
+
+During the baseline scenario, the provider shall establish reference measurements for: 
+
+Application response times. 
+
+Transaction and request throughput. 
+
+Error and timeout rates. 
+
+CPU and memory utilization. 
+
+Database activity and query latency. 
+
+Network utilization. 
+
+External API performance. 
+
+Output 3 analytical model execution time. 
+
+The baseline scenario is not intended to determine the maximum system capacity. Its purpose is to establish the normal operating profile against which all subsequent performance test results will be compared. 
+
+ 
+
+6.2 Load and Peak Performance Test 
+
+The objective of this scenario is to validate that the FEDEGAN ecosystem can sustain the expected production workload and remain stable as demand increases toward the agreed peak workload. 
+
+ 
+
+The provider shall execute representative workloads for Manual Traceability, the Grass-fed Certification Platform, Output 2 – Animal Growth Analysis, and Output 3 – Geospatial Biomass Monitoring simultaneously, using the workload model defined in this specification. 
+
+ 
+
+The workload shall be progressively increased from the established baseline until reaching the agreed peak workload. Throughout the execution, the provider shall monitor application performance, infrastructure utilization, database activity, and the interaction between applications sharing the same infrastructure. 
+
+ 
+
+The provider shall evaluate, at a minimum: 
+
+Application response times.  
+
+Transaction throughput.  
+
+CPU, memory, and network utilization.  
+
+Database performance and query latency.  
+
+Error and timeout rates.  
+
+External API performance for the Slaughterhouse workflow.  
+
+Output 3 analytical model performance under representative production usage.  
+
+Resource contention between applications.  
+
+ 
+
+The provider shall identify the workload level at which performance degradation begins and determine whether the ecosystem can sustain the expected production and peak workloads without significant degradation in application availability, response times, or overall system stability. 
+
+ 
+
+6.3 Stress and Recovery Test 
+
+The objective of this scenario is to determine the operational limits of the FEDEGAN ecosystem and evaluate its ability to recover after operating beyond the agreed peak workload. 
+
+ 
+
+Following the Load and Peak Performance Test, the provider shall progressively increase the workload beyond the target level until significant performance degradation, resource exhaustion, service instability, or application failure is observed. 
+
+ 
+
+The stress phase shall include representative workloads from all applications operating simultaneously. Specialized functions, including the external API integration and the Output 3 analytical model, shall remain within realistic operational constraints unless a separate limit test has been agreed. 
+
+ 
+
+The provider shall identify, at a minimum: 
+
+The maximum sustainable workload. 
+
+The workload level at which significant degradation begins. 
+
+The system breaking point. 
+
+The first application or infrastructure component affected. 
+
+The principal failure modes and bottlenecks. 
+
+Resource utilization at the point of degradation or failure. 
+
+The effect of the overload on the remaining applications. 
+
+Whether the system degrades progressively or fails abruptly. 
+
+Following the stress phase, the provider shall reduce the workload to the established baseline and evaluate whether the applications and shared infrastructure return to normal operating conditions. 
+
+ 
+
+The recovery assessment shall determine: 
+
+The time required to restore baseline response times and throughput. 
+
+Whether CPU, memory, database connections, queues, workers, and other resources are released correctly. 
+
+Whether failed or interrupted transactions require manual intervention. 
+
+Whether any application remains unavailable or degraded after the workload is reduced. 
+
+Whether application or infrastructure components require restart, reconfiguration, or other corrective action. 
+
+The provider shall report the system’s maximum sustainable capacity, breaking point, recovery behaviour, and any technical measures required to improve resilience under overload conditions. 
+
+ 
+
+6.4 Specialized Workload Scenarios 
+
+The objective of this scenario is to evaluate application components whose technical characteristics and resource consumption cannot be fully represented within the general workload model. 
+
+ 
+
+The provider shall execute dedicated tests for the following specialized workloads: 
+
+Database-intensive transactions performed by Manual Traceability. 
+
+External API calls performed during specific Slaughterhouse workflows. 
+
+Python-based analytical processing performed by Output 3 – Geospatial Biomass Monitoring. 
+
+ 
+
+For Manual Traceability, the provider shall evaluate the effect of sustained SQL activity on query response times, database connections, locking, throughput, and the performance of the other applications sharing the same infrastructure. 
+
+ 
+
+For the Slaughterhouse workflow, concurrent calls to the external API shall remain within the expected operational limit of approximately 20 simultaneous users. The provider shall distinguish failures or delays originating from the external service from those generated within the FEDEGAN infrastructure. 
+
+ 
+
+For Output 3, the provider shall evaluate the maximum sustainable number of concurrent analytical executions, processing and queue times, CPU and memory consumption, failure behaviour, and the impact of the Python model on standard web traffic and the remaining FEDEGAN applications. 
+
+ 
+
+The provider shall report the capacity, limitations, bottlenecks, and recommended operational controls for each specialized workload, including any required concurrency limits, queues, throttling mechanisms, caching strategies, or infrastructure adjustments. 
+
+ 
+
+6.5 Integrated Ecosystem Validation 
+
+The objective of this scenario is to validate the stability and performance of the complete FEDEGAN ecosystem when all applications operate simultaneously on the shared infrastructure. 
+
+ 
+
+The provider shall execute representative workloads for Manual Traceability, the Grass-fed Certification Platform, Output 2 – Animal Growth Analysis, and Output 3 – Geospatial Biomass Monitoring concurrently, using the workload assumptions and operational constraints defined in this specification. 
+
+ 
+
+The scenario shall combine: 
+
+Database-intensive activity from Manual Traceability. 
+
+Authenticated transactional activity from the Grass-fed Certification Platform. 
+
+Controlled use of the external API within the Slaughterhouse workflow. 
+
+Public access to Outputs 2 and 3. 
+
+Representative execution of the Output 3 Python-based analytical model. 
+
+ 
+
+The integrated workload shall be sustained for a sufficient period to identify performance issues that may not be visible during shorter tests, including progressive response-time degradation, memory consumption, database connection accumulation, queue growth, resource exhaustion, and competition for shared infrastructure resources. 
+
+ 
+
+The provider shall evaluate whether increased activity in one application adversely affects the availability, response times, throughput, or stability of the remaining applications. 
+
+ 
+
+The provider shall report, at a minimum: 
+
+Overall ecosystem stability under simultaneous operation. 
+
+Performance of each application within the combined workload. 
+
+Cross-application resource contention. 
+
+Progressive degradation during sustained execution. 
+
+Infrastructure components approaching capacity. 
+
+Application or service dependencies that create systemic risk. 
+
+Any required isolation, scaling, throttling, queueing, or resource-allocation measures. 
+
+ 
+
+This scenario shall provide the final assessment of whether the shared infrastructure can support the expected simultaneous operation of the FEDEGAN applications under representative production and peak-demand conditions. 
+
+ 
+
+7. Performance Metrics and Success Criteria 
+
+The provider shall collect and report sufficient performance data to determine whether the FEDEGAN ecosystem can sustain the expected production and peak workloads, identify the point at which degradation begins, and evaluate recovery after overload. 
+
+ 
+
+At a minimum, the assessment shall cover: 
+
+ 
+
+7.1 Application Performance 
+
+The provider shall measure: 
+
+Average, P95, and P99 response times.  
+
+Transaction and request throughput.  
+
+Error and timeout rates.  
+
+Application and service availability.  
+
+ 
+
+Results shall be reported separately for each application and for the principal transactions included in the workload model. 
+
+ 
+
+Success shall be demonstrated where the applications sustain the agreed workload without significant degradation, unacceptable error growth, or loss of availability. 
+
+ 
+
+7.2 Infrastructure and Database Performance 
+
+The provider shall measure: 
+
+CPU, memory, network, disk, and storage utilization.  
+
+Database query response time and throughput.  
+
+Active database connections and connection pool utilization.  
+
+Slow queries, blocking, locking, and deadlocks.  
+
+ 
+
+Success shall be demonstrated where the shared infrastructure supports the agreed workload without sustained resource saturation, database instability, or adverse impact between applications. 
+
+ 
+
+7.3 Specialized Services 
+
+For the Slaughterhouse external API integration, the provider shall measure response time, availability, errors, timeouts, and impact on the Grass-fed Certification Platform. 
+
+ 
+
+For the Output 3 analytical model, the provider shall measure concurrent executions, queue behaviour where applicable, processing time, failed executions, resource consumption, and impact on the remaining services. 
+
+ 
+
+Success shall be demonstrated where these specialized processes operate within the agreed concurrency limits without causing unacceptable degradation in the wider ecosystem. 
+
+ 
+
+7.4 Capacity, Degradation, and Recovery 
+
+For each scenario, the provider shall identify: 
+
+Maximum sustainable workload.  
+
+Workload level at which degradation begins.  
+
+Breaking point.  
+
+Primary bottlenecks.  
+
+Recovery time after load reduction.  
+
+Any resources or services that do not return to normal operating conditions.  
+
+ 
+
+The ecosystem shall be considered operationally suitable where it can sustain the expected production workload, reach the agreed peak workload with controlled performance degradation, recover after overload, and operate without unresolved critical bottlenecks or cross-application failures. 
+
+ 
+
+Where no formal service-level thresholds have been established, the provider shall propose technically justified acceptance thresholds before test execution and obtain FEDEGAN’s approval. 
+
+ 
+
+8. Deliverables 
+
+The provider shall submit one consolidated final report presenting the methodology, results, conclusions, and recommendations of the stress testing exercise. 
+
+ 
+
+The report shall include, at a minimum, the following sections: 
+
+ 
+
+8.1 Executive Summary 
+
+A concise overview of: 
+
+Test scope and applications evaluated. 
+
+Main findings. 
+
+Maximum sustainable workload. 
+
+Principal bottlenecks and risks. 
+
+Overall production-readiness conclusion. 
+
+Priority recommendations. 
+
+ 
+
+8.2 Test Methodology and Workload Model 
+
+A description of: 
+
+Test environment. 
+
+Tools and monitoring mechanisms used. 
+
+Test scenarios executed. 
+
+Workload distribution by application and user profile. 
+
+Ramp-up, duration, and concurrency assumptions. 
+
+Any deviations from the workload model defined in this specification. 
+
+ 
+
+8.3 Results by Test Scenario 
+
+A separate section shall be included for each scenario defined in Section 6: 
+
+Baseline Performance Test. 
+
+Load and Peak Performance Test. 
+
+Stress and Recovery Test. 
+
+Specialized Workload Scenarios. 
+
+Integrated Ecosystem Validation. 
+
+ 
+
+Each scenario section shall include: 
+
+Workload applied. 
+
+Test duration. 
+
+Key performance metrics. 
+
+Relevant graphs. 
+
+Identified bottlenecks or failures. 
+
+Impact on each application. 
+
+A clear conclusion for the scenario. 
+
+ 
+
+8.4 Performance Graphs 
+
+The report shall include time-based graphs that correlate workload levels with system performance, including, where applicable: 
+
+Concurrent users and requests. 
+
+Response times, including P95 and P99. 
+
+Throughput. 
+
+Error and timeout rates. 
+
+CPU and memory utilization. 
+
+Network and disk utilization. 
+
+Database activity and query latency. 
+
+External API performance. 
+
+Output 3 analytical model execution and queue behavior. 
+
+ 
+
+Graphs shall clearly identify the points at which performance degradation, resource saturation, or failure occurred. 
+
+ 
+
+8.5 Capacity and Bottleneck Assessment 
+
+The report shall identify: 
+
+Maximum sustainable workload. 
+
+Workload level at which degradation begins. 
+
+System breaking point. 
+
+Primary application, database, infrastructure, or dependency bottlenecks. 
+
+Cross-application resource contention. 
+
+Recovery time following overload. 
+
+Any components requiring manual intervention or restart. 
+
+ 
+
+8.6 Conclusions and Recommendations 
+
+The provider shall provide: 
+
+An overall conclusion on the capacity and stability of the shared infrastructure. 
+
+A conclusion for each application. 
+
+A conclusion for each specialized workload. 
+
+A determination of whether the ecosystem can support the expected production and peak workloads. 
+
+Prioritized recommendations for application optimization, database tuning, infrastructure scaling, resource isolation, caching, queueing, throttling, or monitoring. 
+
+Recommendations shall be classified, where possible, as: 
+
+Critical actions required before production. 
+
+Short-term improvements. 
+
+Medium-term optimization or scaling measures. 
+
+ 
+
+8.7 Supporting Information 
+
+The provider shall include or attach sufficient supporting information to allow FEDEGAN to validate the conclusions, including: 
+
+Summary tables of test results. 
+
+Relevant error logs. 
+
+Test configuration and assumptions. 
+
+Raw performance results or exported monitoring data, where available. 
+
+Test scripts or execution files, if included in the provider’s proposed scope. 
+
+ 
+
+The final report shall be delivered in an editable format and in PDF. 
